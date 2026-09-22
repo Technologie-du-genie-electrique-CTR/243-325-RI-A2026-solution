@@ -38,27 +38,15 @@
 /* Standard header files */
 
 /* Library header files */
+#include "stm32f4xx_hal.h"
+#include "custom_types.h"
 
 /* Application header files */
-#include "stm32f4xx_hal.h"
 
 
 /*==================================================================================================
  = DEFINITIONS
  =================================================================================================*/
-
-/* Vérification que le type n'existe pas déjà */
-#ifndef bool_t
-/**
- * @brief
- * Définition d'un type booléen s'il n'existe pas déjà.
- */
-typedef enum bool
-{
-  FALSE = 0,
-  TRUE
-} bool_t;
-#endif
 
 /**
  * @brief
@@ -66,7 +54,9 @@ typedef enum bool
  */
 typedef struct app_config
 {
-  int dummy;
+  gpio_t led_blue;
+  gpio_t button_s1;
+  gpio_t relay;
 } app_config_t;
 
 /**
@@ -75,7 +65,9 @@ typedef struct app_config
  */
 typedef struct app_descriptor
 {
-  int dummy;
+  gpio_t led_blue;
+  gpio_t button_s1;
+  gpio_t relay;
 } app_descriptor_t;
 
 /**

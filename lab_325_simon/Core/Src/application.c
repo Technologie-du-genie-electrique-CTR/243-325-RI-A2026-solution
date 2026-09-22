@@ -64,6 +64,8 @@ static app_handle_t gh_app;
  = PRIVATE FUNCTION PROTOTYPES
  =================================================================================================*/
 
+void superloop_polling_blocking1 (void);
+
 /*==================================================================================================
  = PUBLIC FUNCTIONS
  =================================================================================================*/
@@ -82,25 +84,61 @@ void app_init (app_config_t *p_conf)
   memset(gh_app, 0, sizeof(app_descriptor_t));
 
   /* Enregistrement des éléments de configuration dans la structure du descripteur */
-  gh_app->dummy = p_conf->dummy;
+  gh_app->led_blue    = p_conf->led_blue;
+  gh_app->button_s1   = p_conf->button_s1;
+  gh_app->relay       = p_conf->relay;
 }
 
 
 void app_process_loop (void)
 {
-
+  superloop_polling_blocking1();
 
   while(1)
   {
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    printf("\n\r UART Printf Example: retarget the C library printf function to the UART\n\r");
-    HAL_Delay(PRINTF_DELAY);
   }
 }
 
 /*==================================================================================================
  = PRIVATE FUNCTIONS
  =================================================================================================*/
+
+void superloop_polling_blocking1 (void)
+{
+  const uint32_t c_toggle_delay = 1000; // milliseconds
+
+
+
+  uint32_t loop_ctr = 0;
+
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("Superloop, polling, blocking\n\r");
+  printf("--------------------------------------------------\n\r");
+
+  while (1)
+  {
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+
+    // Toggle Blue LED
+    HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+
+    // Read S1 button state
+    gh_app->button_s1.state = HAL_GPIO_ReadPin(gh_app->button_s1.port, gh_app->button_s1.pin);
+    if (BUTTON_PRESSED == (button_state_t) gh_app->button_s1.state)
+    {
+      HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_ON);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_OFF);
+    }
+
+    HAL_Delay(c_toggle_delay);
+  }
+
+}
 
 /*==================================================================================================
  = CALLBACKS
