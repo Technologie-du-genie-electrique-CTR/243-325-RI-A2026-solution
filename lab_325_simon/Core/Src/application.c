@@ -124,7 +124,7 @@ void superloop_polling_blocking1 (void)
 
   printf("\n\r");
   printf("--------------------------------------------------\n\r");
-  printf("\n\r%s\n\r", __func__);
+  printf("%s\n\r", __func__);
   printf("--------------------------------------------------\n\r");
 
   while (1)
@@ -160,7 +160,7 @@ void superloop_polling_blocking2 (void)
 
   printf("\n\r");
   printf("--------------------------------------------------\n\r");
-  printf("Superloop, polling, blocking 2\n\r");
+  printf("%s\n\r", __func__);
   printf("--------------------------------------------------\n\r");
 
   while (1)
@@ -199,7 +199,7 @@ void superloop_polling_nonblocking (void)
 
   printf("\n\r");
   printf("--------------------------------------------------\n\r");
-  printf("Superloop, polling, non-blocking\n\r");
+  printf("%s\n\r", __func__);
   printf("--------------------------------------------------\n\r");
 
   while (1)
@@ -218,12 +218,13 @@ void superloop_polling_nonblocking (void)
     gh_app->button_s1.state = HAL_GPIO_ReadPin(gh_app->button_s1.port, gh_app->button_s1.pin);
     if (BUTTON_PRESSED == (button_state_t) gh_app->button_s1.state)
     {
-      HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_ON);
+      gh_app->relay.state = RELAY_ON;
     }
     else
     {
-      HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_OFF);
+      gh_app->relay.state = RELAY_OFF;
     }
+    HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, gh_app->relay.state);
   }
 }
 
