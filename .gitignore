@@ -1,0 +1,27 @@
+# Fichiers générés par STM32CubeIDE (Eclipse)
+.metadata/
+.settings/
+*.launch
+
+# Répertoires de compilation
+Debug/
+Release/
+
+# Répertoires d'IDE tierces
+EWARM/
+MDK-ARM/
+
+# Répertoires de projets exemples
+GPIO_IOToggle/
+HAL_TimeBase_TIM/
+TIM_PWMInput/
+
+# Fichiers temporaires
+*.bak
+*.log
+*.swp
+*.tmp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
