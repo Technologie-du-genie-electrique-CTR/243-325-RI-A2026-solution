@@ -52,6 +52,11 @@
  = DEFINITIONS
  =================================================================================================*/
 
+// Symbole du préprocesseur pour sélection du mode de fonctionnement
+//#define SUPERLOOP_POLLING_BLOCKING1
+//#define SUPERLOOP_POLLING_BLOCKING2
+#define SUPERLOOP_POLLING_NONBLOCKING
+
 #define PRINTF_DELAY 1000
 
 /*==================================================================================================
@@ -65,6 +70,8 @@ static app_handle_t gh_app;
  =================================================================================================*/
 
 void superloop_polling_blocking1 (void);
+void superloop_polling_blocking2 (void);
+void superloop_polling_nonblocking (void);
 
 /*==================================================================================================
  = PUBLIC FUNCTIONS
@@ -92,7 +99,13 @@ void app_init (app_config_t *p_conf)
 
 void app_process_loop (void)
 {
+#ifdef SUPERLOOP_POLLING_BLOCKING1
   superloop_polling_blocking1();
+#elifdef SUPERLOOP_POLLING_BLOCKING2
+  superloop_polling_blocking2();
+#elifdef SUPERLOOP_POLLING_NONBLOCKING
+  superloop_polling_nonblocking();
+#endif
 
   while(1)
   {
@@ -107,14 +120,11 @@ void superloop_polling_blocking1 (void)
 {
   const uint32_t c_toggle_delay = 1000; // milliseconds
 
-
-
   uint32_t loop_ctr = 0;
-
 
   printf("\n\r");
   printf("--------------------------------------------------\n\r");
-  printf("Superloop, polling, blocking\n\r");
+  printf("\n\r%s\n\r", __func__);
   printf("--------------------------------------------------\n\r");
 
   while (1)
@@ -128,16 +138,93 @@ void superloop_polling_blocking1 (void)
     gh_app->button_s1.state = HAL_GPIO_ReadPin(gh_app->button_s1.port, gh_app->button_s1.pin);
     if (BUTTON_PRESSED == (button_state_t) gh_app->button_s1.state)
     {
+      gh_app->relay.state = RELAY_ON;
+    }
+    else
+    {
+      gh_app->relay.state = RELAY_OFF;
+    }
+    HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, gh_app->relay.state);
+
+    HAL_Delay(c_toggle_delay);
+  }
+}
+
+void superloop_polling_blocking2 (void)
+{
+  const uint32_t c_toggle_delay = 1000; // milliseconds
+
+  uint32_t tick_reference = 0;
+  uint32_t tick_elapsed = 0;
+  uint32_t loop_ctr = 0;
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("Superloop, polling, blocking 2\n\r");
+  printf("--------------------------------------------------\n\r");
+
+  while (1)
+  {
+    tick_reference = HAL_GetTick();
+
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+
+    // Toggle Blue LED
+    HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+
+    do
+    {
+      // Read S1 button state
+      gh_app->button_s1.state = HAL_GPIO_ReadPin(gh_app->button_s1.port, gh_app->button_s1.pin);
+
+      tick_elapsed = HAL_GetTick() - tick_reference;
+      if (c_toggle_delay <= tick_elapsed)
+      {
+        HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_OFF);
+      }
+    }
+    while (BUTTON_RELEASED == (button_state_t) gh_app->button_s1.state);
+
+    HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_ON);
+  }
+}
+
+void superloop_polling_nonblocking (void)
+{
+  const uint32_t c_toggle_delay = 1000; // milliseconds
+
+  uint32_t tick_reference = 0;
+  uint32_t tick_elapsed = 0;
+  uint32_t loop_ctr = 0;
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("Superloop, polling, non-blocking\n\r");
+  printf("--------------------------------------------------\n\r");
+
+  while (1)
+  {
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+
+    tick_elapsed = HAL_GetTick() - tick_reference;
+    if (c_toggle_delay <= tick_elapsed)
+    {
+      // Toggle Blue LED
+      HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+      tick_reference = HAL_GetTick();
+    }
+
+    // Read S1 button state
+    gh_app->button_s1.state = HAL_GPIO_ReadPin(gh_app->button_s1.port, gh_app->button_s1.pin);
+    if (BUTTON_PRESSED == (button_state_t) gh_app->button_s1.state)
+    {
       HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_ON);
     }
     else
     {
       HAL_GPIO_WritePin(gh_app->relay.port, gh_app->relay.pin, RELAY_OFF);
     }
-
-    HAL_Delay(c_toggle_delay);
   }
-
 }
 
 /*==================================================================================================

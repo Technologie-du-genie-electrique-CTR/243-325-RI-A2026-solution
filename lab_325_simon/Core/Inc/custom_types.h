@@ -36,7 +36,7 @@
  * @brief
  * Définition d'un type booléen s'il n'existe pas déjà.
  */
-typedef enum bool
+typedef enum
 {
   FALSE = 0,
   TRUE
@@ -47,7 +47,7 @@ typedef enum bool
  * @brief
  * Type d'état de DEL.
  */
-typedef enum led_state
+typedef enum
 {
   LED_OFF = GPIO_PIN_RESET,
   LED_ON  = GPIO_PIN_SET
@@ -57,7 +57,7 @@ typedef enum led_state
  * @brief
  * Type d'état de bouton.
  */
-typedef enum button_state
+typedef enum
 {
   BUTTON_PRESSED  = GPIO_PIN_RESET,
   BUTTON_RELEASED = GPIO_PIN_SET
@@ -67,7 +67,7 @@ typedef enum button_state
  * @brief
  * Type d'état de relais.
  */
-typedef enum relay_state
+typedef enum
 {
   RELAY_OFF = GPIO_PIN_RESET,
   RELAY_ON  = GPIO_PIN_SET
@@ -77,7 +77,7 @@ typedef enum relay_state
  * @brief
  * Structure de broche E/S.
  */
-typedef struct gpio_s
+typedef struct
 {
   GPIO_TypeDef *port;
   uint16_t pin;
