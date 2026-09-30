@@ -52,11 +52,6 @@
  = DEFINITIONS
  =================================================================================================*/
 
-// Symbole du préprocesseur pour sélection du mode de fonctionnement
-//#define SUPERLOOP_POLLING_BLOCKING1
-//#define SUPERLOOP_POLLING_BLOCKING2
-#define SUPERLOOP_POLLING_NONBLOCKING
-
 #define PRINTF_DELAY 1000
 
 /*==================================================================================================
@@ -72,6 +67,11 @@ static app_handle_t gh_app;
 void superloop_polling_blocking1 (void);
 void superloop_polling_blocking2 (void);
 void superloop_polling_nonblocking (void);
+void superloop_interrupt_driven_nonblocking (void);
+void event_driven_interrupt_driven_nonblocking1 (void);
+void event_driven_interrupt_driven_nonblocking2 (void);
+void timer_process_evt (void);
+void button_process_evt (void);
 
 /*==================================================================================================
  = PUBLIC FUNCTIONS
@@ -94,6 +94,7 @@ void app_init (app_config_t *p_conf)
   gh_app->led_blue    = p_conf->led_blue;
   gh_app->button_s1   = p_conf->button_s1;
   gh_app->relay       = p_conf->relay;
+  gh_app->h_tim2      = p_conf->h_tim2;
 }
 
 
@@ -105,6 +106,12 @@ void app_process_loop (void)
   superloop_polling_blocking2();
 #elifdef SUPERLOOP_POLLING_NONBLOCKING
   superloop_polling_nonblocking();
+#elifdef SUPERLOOP_INTERRUPT_DRIVEN_NONBLOCKING
+  superloop_interrupt_driven_nonblocking();
+#elifdef EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING1
+  event_driven_interrupt_driven_nonblocking1();
+#elifdef EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2
+  event_driven_interrupt_driven_nonblocking2();
 #endif
 
   while(1)
@@ -228,6 +235,134 @@ void superloop_polling_nonblocking (void)
   }
 }
 
+void superloop_interrupt_driven_nonblocking (void)
+{
+  uint32_t loop_ctr = 0;
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("%s\n\r", __func__);
+  printf("--------------------------------------------------\n\r");
+
+  HAL_TIM_Base_Start_IT(gh_app->h_tim2);
+
+  while (1)
+  {
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+  }
+}
+
+void event_driven_interrupt_driven_nonblocking1 (void)
+{
+  uint32_t loop_ctr = 0;
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("%s\n\r", __func__);
+  printf("--------------------------------------------------\n\r");
+
+  HAL_TIM_Base_Start_IT(gh_app->h_tim2);
+
+  while (1)
+  {
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+
+    if (gh_app->b_timer_flag)
+    {
+      gh_app->b_timer_flag = FALSE;
+
+      // Toggle Blue LED
+      HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+    }
+
+    if (gh_app->b_button_flag)
+    {
+      gh_app->b_button_flag = FALSE;
+
+      // S1 button was pressed or released
+      HAL_GPIO_TogglePin(gh_app->relay.port, gh_app->relay.pin);
+    }
+  }
+}
+
+void event_driven_interrupt_driven_nonblocking2 (void)
+{
+  uint32_t loop_ctr = 0;
+
+  printf("\n\r");
+  printf("--------------------------------------------------\n\r");
+  printf("%s\n\r", __func__);
+  printf("--------------------------------------------------\n\r");
+
+  HAL_TIM_Base_Start_IT(gh_app->h_tim2);
+
+  while (1)
+  {
+    printf("Boucle #%u\n\r", (unsigned int)loop_ctr++);
+
+    if (gh_app->b_timer_flag)
+    {
+      gh_app->b_timer_flag = FALSE;
+      timer_process_evt();
+    }
+
+    if (gh_app->b_button_flag)
+    {
+      gh_app->b_button_flag = FALSE;
+      button_process_evt();
+    }
+  }
+}
+
+void timer_process_evt (void)
+{
+  // Toggle Blue LED
+  HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+}
+
+void button_process_evt (void)
+{
+  // S1 button was pressed or released
+  HAL_GPIO_TogglePin(gh_app->relay.port, gh_app->relay.pin);
+}
+
 /*==================================================================================================
  = CALLBACKS
  =================================================================================================*/
+
+#if defined(SUPERLOOP_INTERRUPT_DRIVEN_NONBLOCKING)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == gh_app->button_s1.pin)
+  {
+    // S1 button was pressed or released
+    HAL_GPIO_TogglePin(gh_app->relay.port, gh_app->relay.pin);
+  }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (gh_app->h_tim2 == htim)
+  {
+    // Toggle Blue LED
+    HAL_GPIO_TogglePin(gh_app->led_blue.port, gh_app->led_blue.pin);
+  }
+}
+
+#elif defined(EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING1) || defined(EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == gh_app->button_s1.pin)
+  {
+    gh_app->b_button_flag = TRUE;
+  }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (gh_app->h_tim2 == htim)
+  {
+    gh_app->b_timer_flag = TRUE;
+  }
+}
+#endif

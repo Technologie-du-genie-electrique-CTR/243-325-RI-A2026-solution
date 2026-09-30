@@ -48,6 +48,14 @@
  = DEFINITIONS
  =================================================================================================*/
 
+// Symbole du préprocesseur pour sélection du mode de fonctionnement
+//#define SUPERLOOP_POLLING_BLOCKING1
+//#define SUPERLOOP_POLLING_BLOCKING2
+//#define SUPERLOOP_POLLING_NONBLOCKING
+//#define SUPERLOOP_INTERRUPT_DRIVEN_NONBLOCKING
+//#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING1
+#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2
+
 /**
  * @brief
  * Structure de configuration de l'application.
@@ -57,6 +65,7 @@ typedef struct app_config
   gpio_t led_blue;
   gpio_t button_s1;
   gpio_t relay;
+  TIM_HandleTypeDef *h_tim2;
 } app_config_t;
 
 /**
@@ -68,6 +77,9 @@ typedef struct app_descriptor
   gpio_t led_blue;
   gpio_t button_s1;
   gpio_t relay;
+  TIM_HandleTypeDef *h_tim2;
+  volatile bool_t b_timer_flag;
+  volatile bool_t b_button_flag;
 } app_descriptor_t;
 
 /**
