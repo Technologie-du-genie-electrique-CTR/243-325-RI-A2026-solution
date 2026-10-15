@@ -54,7 +54,13 @@
 //#define SUPERLOOP_POLLING_NONBLOCKING
 //#define SUPERLOOP_INTERRUPT_DRIVEN_NONBLOCKING
 //#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING1
-#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2
+//#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2
+#define EVENT_DRIVEN_INTERRUPT_DRIVEN_NONBLOCKING2_LPM
+//#define EVENT_DRIVEN_HW_EVENT_DRIVEN_NONBLOCKING
+
+/*==============================================================================
+ = TYPE DEFINITIONS
+ =============================================================================*/
 
 /**
  * @brief
@@ -65,6 +71,9 @@ typedef struct app_config
   gpio_t led_blue;
   gpio_t button_s1;
   gpio_t relay;
+  gpio_t la_a3;
+  gpio_t la_a4;
+  gpio_t la_a5;
   TIM_HandleTypeDef *h_tim2;
 } app_config_t;
 
@@ -77,6 +86,9 @@ typedef struct app_descriptor
   gpio_t led_blue;
   gpio_t button_s1;
   gpio_t relay;
+  gpio_t la_a3;
+  gpio_t la_a4;
+  gpio_t la_a5;
   TIM_HandleTypeDef *h_tim2;
   volatile bool_t b_timer_flag;
   volatile bool_t b_button_flag;

@@ -94,14 +94,25 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   app_config_t config;
+#ifndef EVENT_DRIVEN_HW_EVENT_DRIVEN_NONBLOCKING
   config.led_blue.port  = BLUE_LED_GPIO_Port;
   config.led_blue.pin   = BLUE_LED_Pin;
   config.led_blue.state = LED_OFF;
+#endif
   config.button_s1.port = S1_BUTTON_GPIO_Port;
   config.button_s1.pin  = S1_BUTTON_Pin;
   config.relay.port     = RELAY_GPIO_Port;
   config.relay.pin      = RELAY_Pin;
   config.relay.state    = RELAY_OFF;
+  config.la_a3.port     = LOGIC_ANALYSER_A3_GPIO_Port;
+  config.la_a3.pin      = LOGIC_ANALYSER_A3_Pin;
+  config.la_a3.state    = GPIO_PIN_RESET;
+  config.la_a4.port     = LOGIC_ANALYSER_A4_GPIO_Port;
+  config.la_a4.pin      = LOGIC_ANALYSER_A4_Pin;
+  config.la_a4.state    = GPIO_PIN_RESET;
+  config.la_a5.port     = LOGIC_ANALYSER_A5_GPIO_Port;
+  config.la_a5.pin      = LOGIC_ANALYSER_A5_Pin;
+  config.la_a5.state    = GPIO_PIN_RESET;
   config.h_tim2         = &htim2;
   app_init(&config);
   /* USER CODE END 2 */
@@ -256,7 +267,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, LOGIC_ANALYSER_A5_Pin|LOGIC_ANALYSER_A4_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, BLUE_LED_Pin|RELAY_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LOGIC_ANALYSER_A3_GPIO_Port, LOGIC_ANALYSER_A3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -264,12 +281,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : LOGIC_ANALYSER_A5_Pin LOGIC_ANALYSER_A4_Pin */
+  GPIO_InitStruct.Pin = LOGIC_ANALYSER_A5_Pin|LOGIC_ANALYSER_A4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pins : BLUE_LED_Pin RELAY_Pin */
   GPIO_InitStruct.Pin = BLUE_LED_Pin|RELAY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LOGIC_ANALYSER_A3_Pin */
+  GPIO_InitStruct.Pin = LOGIC_ANALYSER_A3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LOGIC_ANALYSER_A3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : S1_BUTTON_Pin */
   GPIO_InitStruct.Pin = S1_BUTTON_Pin;
