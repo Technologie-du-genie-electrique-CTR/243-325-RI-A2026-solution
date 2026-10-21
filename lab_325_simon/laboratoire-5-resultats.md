@@ -11,7 +11,7 @@ Auteur : Simon Boucher
 * Rapport cyclique A4 (%):~0
 * Durée du bloc d'instruction A3 (ms):~1,4844
 * Durée du bloc d'instruction A4 (ms):~0,0153
-* Durée du délais (ms):~1000,55
+* Durée du délai (ms):~1000,55
 * Durée de l'affichage (ms):~1,4659 (ce résultat dépend du nombre de caractères affichés)
 
 
@@ -19,7 +19,7 @@ Auteur : Simon Boucher
 
 ### Mesures
 
-* Durée du délais (ms):1086,10
+* Durée du délai (ms):1086,10
 * Durée de l'appui du bouton (ms):87,55 (ça dépend de la durée d'appui de chacun)
 
 
@@ -27,7 +27,7 @@ Auteur : Simon Boucher
 
 ### Mesures
 
-* Durée du délais (ms):~0,0031
+* Durée du délai (ms):~0,0031
 * Durée de l'appui du bouton (ms):130,97 (ça dépend de la durée d'appui de chacun)
 
 
@@ -37,7 +37,7 @@ Auteur : Simon Boucher
 
 * Rapport cyclique A3 (%):~99,83
 * Durée du bloc d'instruction A3 (ms):~1,8072
-* Durée du délais (ms):0,0031
+* Durée du délai (ms):0,0031
 * Durée de l'ISR HAL_TIM_PeriodElapsedCallback (ms):0,0077
 
 
@@ -54,7 +54,7 @@ Aucune mesure à prendre puisque cette procédure est très similaire à la 6iè
 
 * Rapport cyclique A3 (%):~99,83
 * Durée du bloc d'instruction A3 (ms):~1,8022
-* Durée du délais (ms):~0,003
+* Durée du délai (ms):~0,003
 * Durée de l'ISR HAL_TIM_PeriodElapsedCallback (ms):~0,0044
 
 
@@ -64,7 +64,7 @@ Aucune mesure à prendre puisque cette procédure est très similaire à la 6iè
 
 * Rapport cyclique A3 (%):~0,13
 * Durée du bloc d'instruction A3 (ms):~1,349
-* Durée du délais (ms):~999,63
+* Durée du délai (ms):~999,63
 * Durée de l'ISR HAL_TIM_PeriodElapsedCallback (ms):~0,0044
 
 
